@@ -29,23 +29,26 @@ clone_repo_commit() {
     fi
 }
 
-rm -f .deps-obtained
+# Create build directory for dependencies
+mkdir -p ../build/kernel
+
+rm -f ../build/kernel/.deps-obtained
 
 clone_repo_commit \
     https://codeberg.org/OSDev/freestnd-c-hdrs-0bsd.git \
-    freestnd-c-hdrs \
+    ../build/kernel/freestnd-c-hdrs \
     5e4e9e70278fe89ea328d359a58aff4f4a94b165
 
 clone_repo_commit \
     https://codeberg.org/OSDev/cc-runtime.git \
-    cc-runtime \
+    ../build/kernel/cc-runtime \
     dae79833b57a01b9fd3e359ee31def69f5ae899b
 
 clone_repo_commit \
     https://codeberg.org/Limine/limine-protocol.git \
-    limine-protocol \
+    ../build/kernel/limine-protocol \
     fedf97facd1c473ee8720f8dfd5a71d03490d928
 
-touch .deps-obtained
+touch ../build/kernel/.deps-obtained
 
 printf "\nDependencies obtained successfully.\n"

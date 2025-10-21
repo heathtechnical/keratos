@@ -55,9 +55,12 @@ endif
 # User controllable linker flags. We set none by default.
 LDFLAGS :=
 
+# Build directory - use main build directory from parent
+KERNEL_BUILD_DIR := ../build/kernel
+
 # Ensure the dependencies have been obtained.
 ifneq ($(filter-out clean distclean,$(MAKECMDGOALS)),)
-    ifeq ($(wildcard .deps-obtained),)
+    ifeq ($(wildcard $(KERNEL_BUILD_DIR)/.deps-obtained),)
         $(error Please run the ./get-deps script first)
     endif
 endif
@@ -82,8 +85,8 @@ override CFLAGS += \
 # Internal C preprocessor flags that should not be changed by the user.
 override CPPFLAGS := \
     -I src \
-    -I limine-protocol/include \
-    -isystem freestnd-c-hdrs/include \
+    -I $(KERNEL_BUILD_DIR)/limine-protocol/include \
+    -isystem $(KERNEL_BUILD_DIR)/freestnd-c-hdrs/include \
     $(CPPFLAGS) \
     -DLIMINE_API_REVISION=3 \
     -MMD \
@@ -167,12 +170,12 @@ override LDFLAGS += \
     -static \
     -z max-page-size=0x1000 \
     --gc-sections \
-    -T linker-scripts/$(ARCH).lds
+    -T src/kernel.ld
 
 # Use "find" to glob all *.c, *.S, and *.asm files in the tree
 # (except the src/arch/* directories, as those are gonna be added
 # in the next step).
-override SRCFILES := $(shell find -L src cc-runtime/src -type f -not -path 'src/arch/*' 2>/dev/null | LC_ALL=C sort)
+override SRCFILES := $(shell find -L src $(KERNEL_BUILD_DIR)/cc-runtime/src -type f -not -path 'src/arch/*' 2>/dev/null | LC_ALL=C sort)
 # Add architecture specific files, if they exist.
 override SRCFILES += $(shell find -L src/arch/$(ARCH) -type f 2>/dev/null | LC_ALL=C sort)
 # Obtain the object and header dependencies file names.
@@ -181,56 +184,56 @@ override ASFILES := $(filter %.S,$(SRCFILES))
 ifeq ($(ARCH),x86_64)
 override NASMFILES := $(filter %.asm,$(SRCFILES))
 endif
-override OBJ := $(addprefix obj-$(ARCH)/,$(CFILES:.c=.c.o) $(ASFILES:.S=.S.o))
+override OBJ := $(addprefix $(KERNEL_BUILD_DIR)/obj-$(ARCH)/,$(CFILES:.c=.c.o) $(ASFILES:.S=.S.o))
 ifeq ($(ARCH),x86_64)
-override OBJ += $(addprefix obj-$(ARCH)/,$(NASMFILES:.asm=.asm.o))
+override OBJ += $(addprefix $(KERNEL_BUILD_DIR)/obj-$(ARCH)/,$(NASMFILES:.asm=.asm.o))
 endif
-override HEADER_DEPS := $(addprefix obj-$(ARCH)/,$(CFILES:.c=.c.d) $(ASFILES:.S=.S.d))
+override HEADER_DEPS := $(addprefix $(KERNEL_BUILD_DIR)/obj-$(ARCH)/,$(CFILES:.c=.c.d) $(ASFILES:.S=.S.d))
 
 # Default target. This must come first, before header dependencies.
 .PHONY: all
-all: bin-$(ARCH)/$(OUTPUT)
+all: $(KERNEL_BUILD_DIR)/bin-$(ARCH)/$(OUTPUT)
 
 # Include header dependencies.
 -include $(HEADER_DEPS)
 
 # Link rules for the final executable.
-bin-$(ARCH)/$(OUTPUT): GNUmakefile linker-scripts/$(ARCH).lds $(OBJ)
+$(KERNEL_BUILD_DIR)/bin-$(ARCH)/$(OUTPUT): GNUmakefile src/kernel.ld $(OBJ)
 	mkdir -p "$(dir $@)"
 	$(LD) $(LDFLAGS) $(OBJ) -o $@
 
 # Compilation rules for *.c files.
-obj-$(ARCH)/%.c.o: %.c GNUmakefile
+$(KERNEL_BUILD_DIR)/obj-$(ARCH)/%.c.o: %.c GNUmakefile
 	mkdir -p "$(dir $@)"
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 # Compilation rules for *.S files.
-obj-$(ARCH)/%.S.o: %.S GNUmakefile
+$(KERNEL_BUILD_DIR)/obj-$(ARCH)/%.S.o: %.S GNUmakefile
 	mkdir -p "$(dir $@)"
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 ifeq ($(ARCH),x86_64)
-# Compilation rules for *.asm (nasm) files.
-obj-$(ARCH)/%.asm.o: %.asm GNUmakefile
+# Compilation rules for *.asm files.
+$(KERNEL_BUILD_DIR)/obj-$(ARCH)/%.asm.o: %.asm GNUmakefile
 	mkdir -p "$(dir $@)"
-	nasm $(NASMFLAGS) $< -o $@
+	nasm $(NASMFLAGS) -o $@ $<
 endif
 
-# Remove object files and the final executable.
+# Remove object and binaries.
 .PHONY: clean
 clean:
-	rm -rf bin-$(ARCH) obj-$(ARCH)
+	rm -rf $(KERNEL_BUILD_DIR)/bin-$(ARCH) $(KERNEL_BUILD_DIR)/obj-$(ARCH)
 
 # Remove everything built and generated including downloaded dependencies.
 .PHONY: distclean
 distclean:
-	rm -rf bin-* obj-* .deps-obtained freestnd-c-hdrs cc-runtime limine-protocol
+	rm -rf build
 
 # Install the final built executable to its final on-root location.
 .PHONY: install
 install: all
 	install -d "$(DESTDIR)$(PREFIX)/share/$(OUTPUT)"
-	install -m 644 bin-$(ARCH)/$(OUTPUT) "$(DESTDIR)$(PREFIX)/share/$(OUTPUT)/$(OUTPUT)-$(ARCH)"
+	install -m 644 $(KERNEL_BUILD_DIR)/bin-$(ARCH)/$(OUTPUT) "$(DESTDIR)$(PREFIX)/share/$(OUTPUT)/$(OUTPUT)-$(ARCH)"
 
 # Try to undo whatever the "install" target did.
 .PHONY: uninstall
