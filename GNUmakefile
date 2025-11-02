@@ -57,7 +57,7 @@ run-debug: $(IMAGE_NAME).iso
 		-monitor telnet:127.0.0.1:1235,server,nowait \
 		-serial stdio \
 		-boot d \
-		-s -nographic \
+		-s -S -nographic \
 		$(QEMUFLAGS)
     
 

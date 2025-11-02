@@ -51,7 +51,6 @@ void kmain(void)
     set_putchar_func(qemu_putchar);
 
     kprintf("Keratos kernel loaded: %s!\n", "successfully");
-    kprintf("Fetching framebuffer information...\n");
 
     // Ensure we got a framebuffer.
     if (framebuffer_request.response == NULL || framebuffer_request.response->framebuffer_count < 1)
