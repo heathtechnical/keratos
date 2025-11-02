@@ -85,6 +85,7 @@ override CFLAGS += \
 # Internal C preprocessor flags that should not be changed by the user.
 override CPPFLAGS := \
     -I src \
+    -I include \
     -I $(KERNEL_BUILD_DIR)/limine-protocol/include \
     -isystem $(KERNEL_BUILD_DIR)/freestnd-c-hdrs/include \
     $(CPPFLAGS) \
