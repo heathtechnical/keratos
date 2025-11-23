@@ -115,6 +115,37 @@ int vprintf_func(putchar_func_t putchar_func, const char *fmt, va_list args)
             }
             break;
         }
+        case 'p':
+        {
+            void *ptr = va_arg(args, void *);
+            uintptr_t value = (uintptr_t)ptr;
+            char numbuf[2 + sizeof(uintptr_t) * 2 + 1]; // "0x" + hex digits + null
+            char *nump = numbuf + sizeof(numbuf) - 1;
+            *nump = '\0';
+
+            if (value == 0)
+            {
+                *(--nump) = '0';
+            }
+            else
+            {
+                while (value > 0)
+                {
+                    unsigned int digit = value & 0xF;
+                    *(--nump) = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
+                    value >>= 4;
+                }
+            }
+            *(--nump) = 'x';
+            *(--nump) = '0';
+
+            while (*nump)
+            {
+                putchar_func(*nump++);
+                count++;
+            }
+            break;
+        }
         case '%':
             putchar_func('%');
             count++;
