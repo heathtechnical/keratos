@@ -12,6 +12,7 @@ typedef struct
     char *version;
     char *cmdline;
     uint64_t hhdm_offset;
+    uint64_t memmap_entries;
 } bootinfo_info_t;
 
 bootinfo_info_t *bootinfo(void);
