@@ -53,10 +53,14 @@ void bootinfo_sync(void)
     if (hhdm_request.response == NULL)
         panic("Limine HHDM response is NULL!");
 
+    if (memmap_request.response == NULL)
+        panic("Limine memmap response is NULL!");
+
     bootinfo_info.name = (char *)(uintptr_t)bootloader_info_request.response->name;
     bootinfo_info.version = (char *)(uintptr_t)bootloader_info_request.response->version;
     bootinfo_info.cmdline = (char *)(uintptr_t)executable_cmdline_request.response->cmdline;
     bootinfo_info.hhdm_offset = hhdm_request.response->offset;
+    bootinfo_info.memmap_entries = memmap_request.response->entry_count;
 }
 
 /**
