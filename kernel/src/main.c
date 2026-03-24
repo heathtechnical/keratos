@@ -65,17 +65,17 @@ void kmain(void)
     // Initialise bootstrap CPU
     init_cpu_bsp();
 
-    struct kernel_token_t mytok = {
-        resource : "file:///foo",
-        permissions : 1,
-        expiry : 0,
-        nonce : 123,
-        signature : 0
-    };
+    // struct kernel_token_t mytok = {
+    //     resource : "file:///foo",
+    //     permissions : 1,
+    //     expiry : 0,
+    //     nonce : 123,
+    //     signature : 0
+    // };
 
-    mytok.signature = sign_token(&mytok);
+    // mytok.signature = sign_token(&mytok);
 
-    kprintf("[toktest] signature=0x%x", mytok.signature);
+    // kprintf("[toktest] signature=0x%x", mytok.signature);
 
     // We're done, just hang...
     kprintf("[init] Halt!\n");
