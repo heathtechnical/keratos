@@ -91,4 +91,8 @@ static const char *const exception_names[32] = {
     "Reserved"};
 
 void init_idt(void);
+void irq_enable(void);
+
+#define IRQ_APIC_TIMER_NUMBER 0x40
+
 #endif // CPU_INTERRUPT_H

@@ -181,6 +181,7 @@ override SRCFILES := $(shell find -L src $(KERNEL_BUILD_DIR)/cc-runtime/src -typ
 override SRCFILES += $(shell find -L src/arch/$(ARCH) -type f 2>/dev/null | LC_ALL=C sort)
 # Obtain the object and header dependencies file names.
 override CFILES := $(filter %.c,$(SRCFILES))
+override CFILES := $(filter-out %_debug.c,$(CFILES))
 override ASFILES := $(filter %.S,$(SRCFILES))
 ifeq ($(ARCH),x86_64)
 override NASMFILES := $(filter %.asm,$(SRCFILES))

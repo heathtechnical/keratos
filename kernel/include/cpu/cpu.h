@@ -3,8 +3,11 @@
 
 #include <stdint.h>
 
-void init_cpu_bsp(void);
-void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx);
+void cpu_bsp_init(void);
+void cpu_cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx);
+uint64_t cpu_msr_read(uint32_t msr);
+void cpu_msr_write(uint32_t msr, uint64_t value);
+uint64_t cpu_cr3_read(void);
 
 typedef struct
 {

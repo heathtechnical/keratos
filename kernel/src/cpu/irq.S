@@ -101,3 +101,37 @@ isr_stub 28
 isr_stub 29 error_code=1
 isr_stub 30 error_code=1
 isr_stub 31
+isr_stub 32
+isr_stub 33
+isr_stub 34
+isr_stub 35
+isr_stub 36
+isr_stub 37
+isr_stub 38
+isr_stub 39
+isr_stub 40
+isr_stub 41
+isr_stub 42
+isr_stub 43
+isr_stub 44
+isr_stub 45
+isr_stub 46
+isr_stub 47
+isr_stub 48
+isr_stub 49
+isr_stub 50
+isr_stub 51
+isr_stub 52
+isr_stub 53
+isr_stub 54
+isr_stub 55
+isr_stub 56
+isr_stub 57
+isr_stub 58
+isr_stub 59
+isr_stub 60
+isr_stub 61
+isr_stub 62
+isr_stub 63
+isr_stub 64
+

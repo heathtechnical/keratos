@@ -1,7 +1,9 @@
-#include <cpu/irq.h>
 #include <string.h>
 #include <vsprintf.h>
 #include <panic.h>
+#include <cpu/irq.h>
+#include <cpu/cpu.h>
+#include <cpu/lapic.h>
 
 idt_t idt;
 
@@ -12,14 +14,19 @@ extern void *_default_interrupt_handlers[];
 
 interrupt_frame_t *exception_handler(interrupt_frame_t *frame)
 {
+    // TODO: Handle APIC timer
+    if (frame->interrupt_number == IRQ_APIC_TIMER_NUMBER)
+    {
+        kprintf("[cpu/apic]: tick\n");
+        lapic_send_eoi();
+        return frame;
+    }
 
-    panic("Exception: %s (interrupt number: %d, error code: %d, RIP: 0x%p)",
+    panic("Exception: %s (interrupt number: %d, error code: %d, RIP: 0x%p)\n",
           (frame->interrupt_number < 32) ? exception_names[frame->interrupt_number] : "Unknown",
           frame->interrupt_number,
           frame->error_code,
           frame->rip);
-
-    return frame;
 }
 
 void init_idt(void)
@@ -29,7 +36,7 @@ void init_idt(void)
     idt.idtr.limit = sizeof(idt.entries) - 1;
     idt.idtr.base = (uint64_t)(uintptr_t)&idt.entries;
 
-    for (int i = 0; i < 31; i++)
+    for (int i = 0; i < 65; i++)
     {
         uint64_t handler_addr = (uint64_t)(uintptr_t)_default_interrupt_handlers[i];
 

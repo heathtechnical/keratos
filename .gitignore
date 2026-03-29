@@ -1,3 +1,4 @@
 .vscode
 build/
 AICHANGELOG.md
+*_debug.c

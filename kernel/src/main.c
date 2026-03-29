@@ -9,6 +9,8 @@
 #include <types.h>
 #include <mm/earlyalloc.h>
 #include <cpu/cpu.h>
+#include <cpu/irq.h>
+#include <mm/page.h>
 
 // Halt and catch fire function.
 static void hcf(void)
@@ -63,19 +65,9 @@ void kmain(void)
             bootinfo()->version);
 
     // Initialise bootstrap CPU
-    init_cpu_bsp();
+    cpu_bsp_init();
 
-    // struct kernel_token_t mytok = {
-    //     resource : "file:///foo",
-    //     permissions : 1,
-    //     expiry : 0,
-    //     nonce : 123,
-    //     signature : 0
-    // };
-
-    // mytok.signature = sign_token(&mytok);
-
-    // kprintf("[toktest] signature=0x%x", mytok.signature);
+    irq_enable();
 
     // We're done, just hang...
     kprintf("[init] Halt!\n");
