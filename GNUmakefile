@@ -38,8 +38,8 @@ run-x86_64: $(BUILD_DIR)/ovmf/ovmf-code-$(ARCH).fd $(IMAGE_NAME).iso
 		-monitor telnet:127.0.0.1:1235,server,nowait \
 		-serial stdio \
 		-boot d \
-		-nographic \
 		$(QEMUFLAGS)
+# 		-nographic \
 
 .PHONY: run-hdd-x86_64
 run-hdd-x86_64: $(BUILD_DIR)/ovmf/ovmf-code-$(ARCH).fd $(IMAGE_NAME).hdd

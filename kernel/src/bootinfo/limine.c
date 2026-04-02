@@ -34,6 +34,11 @@ __attribute__((used, section(".limine_requests"))) volatile struct limine_hhdm_r
     .revision = 0,
 };
 
+__attribute__((used, section(".limine_requests"))) volatile struct limine_framebuffer_request framebuffer_request = {
+    .id = LIMINE_FRAMEBUFFER_REQUEST,
+    .revision = 0,
+};
+
 __attribute__((used, section(".limine_requests_end"))) static volatile LIMINE_REQUESTS_END_MARKER;
 
 /**
@@ -56,11 +61,18 @@ void bootinfo_sync(void)
     if (memmap_request.response == NULL)
         panic("Limine memmap response is NULL!");
 
+    if (framebuffer_request.response == NULL)
+        panic("Limine framebuffer response is NULL");
+
     bootinfo_info.name = (char *)(uintptr_t)bootloader_info_request.response->name;
     bootinfo_info.version = (char *)(uintptr_t)bootloader_info_request.response->version;
     bootinfo_info.cmdline = (char *)(uintptr_t)executable_cmdline_request.response->cmdline;
     bootinfo_info.hhdm_offset = hhdm_request.response->offset;
     bootinfo_info.memmap_entries = memmap_request.response->entry_count;
+    bootinfo_info.code_segment = 0x28;
+    bootinfo_info.data_segment = 0x30;
+    bootinfo_info.framebuffers_count = framebuffer_request.response->framebuffer_count;
+    bootinfo_info.framebuffers = (void **)framebuffer_request.response->framebuffers;
 }
 
 /**

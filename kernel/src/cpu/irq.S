@@ -39,7 +39,7 @@
         call exception_handler
 
         // Use the returned stack pointer
-        mov %rax, %rsp
+        // mov %rax, %rsp
 
         // Restore registers
         popq    %r15
@@ -134,4 +134,5 @@ isr_stub 61
 isr_stub 62
 isr_stub 63
 isr_stub 64
+isr_stub 65
 
