@@ -13,7 +13,7 @@ extern void *_default_interrupt_handlers[];
 
 void exception_handler(struct interrupt_frame_t *frame)
 {
-    // Save these because they won't be valid after schedule is called
+    // Save these because they won't be valid after schedule is called and frame is switched
     uint64_t interrupt_number = frame->interrupt_number;
     uint64_t error_code = frame->error_code;
 
