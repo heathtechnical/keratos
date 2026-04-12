@@ -8,6 +8,7 @@
 #include <cpu/irq.h>
 
 #define TASKS_MAX 254
+#define TASK_STACK_SIZE 8192
 
 // Use a static list of tasks for now
 struct task_t *tasks[TASKS_MAX];
@@ -33,8 +34,8 @@ void task_create(struct task_t *t, char *name, void *entry)
 
     t->status = STATUS_RUNNABLE;
 
-    uint8_t *stack = earlyalloc_alloc(8192, 4096);
-    memset(stack, 0, 8192);
+    uint8_t *stack = earlyalloc_alloc(TASK_STACK_SIZE, 4096);
+    memset(stack, 0, TASK_STACK_SIZE);
 
     t->frame.rip = (uintptr_t)entry;
     t->frame.rsp = (uint64_t)stack + 8192;
