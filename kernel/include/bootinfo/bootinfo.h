@@ -13,6 +13,10 @@ typedef struct
     char *cmdline;
     uint64_t hhdm_offset;
     uint64_t memmap_entries;
+    uint16_t code_segment;
+    uint16_t data_segment;
+    uint64_t framebuffers_count;
+    void **framebuffers;
 } bootinfo_info_t;
 
 bootinfo_info_t *bootinfo(void);

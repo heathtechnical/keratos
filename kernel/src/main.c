@@ -11,6 +11,10 @@
 #include <cpu/cpu.h>
 #include <cpu/irq.h>
 #include <mm/page.h>
+#include <task.h>
+#include <panic.h>
+
+#include <tasks.h>
 
 // Halt and catch fire function.
 static void hcf(void)
@@ -19,30 +23,6 @@ static void hcf(void)
     {
         asm("hlt");
     }
-}
-
-#define KERNEL_SIGNING_KEY 0xDEADBEEF
-uint64_t kernel_key = KERNEL_SIGNING_KEY;
-
-struct kernel_token_t
-{
-    char resource[32];
-    uint32_t permissions;
-    uint32_t expiry;
-    uint32_t nonce;
-    uint64_t signature;
-};
-
-uint64_t sign_token(struct kernel_token_t *t)
-{
-    uint64_t hash = 0;
-    for (int i = 0; i < sizeof(t->resource); i++)
-        hash += t->resource[i];
-    hash += t->permissions;
-    hash += t->expiry;
-    hash += t->nonce;
-    hash ^= kernel_key;
-    return hash;
 }
 
 // The following will be our kernel's entry point.
@@ -67,7 +47,17 @@ void kmain(void)
     // Initialise bootstrap CPU
     cpu_bsp_init();
 
+    // Initialise task subsystem
+    task_init();
+
+    // Enable interrupts
     irq_enable();
+
+    // Create demo framebuffer splash screen
+    struct task_t fbsplash_task, ticker_task, tocker_task;
+    task_create(&fbsplash_task, "fbsplash", &fbsplash_loop);
+    task_create(&ticker_task, "ticker", &ticker_loop);
+    task_create(&tocker_task, "ticker", &tocker_loop);
 
     // We're done, just hang...
     kprintf("[init] Halt!\n");

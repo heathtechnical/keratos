@@ -26,7 +26,7 @@ typedef struct
     idtr_t idtr;
 } __attribute__((packed)) idt_t;
 
-typedef struct
+struct interrupt_frame_t
 {
     uint64_t r15;
     uint64_t r14;
@@ -52,7 +52,7 @@ typedef struct
     uint64_t rflags;
     uint64_t rsp;
     uint64_t ss;
-} __attribute__((__packed__)) interrupt_frame_t;
+} __attribute__((__packed__));
 
 // ...existing code...
 
@@ -90,9 +90,12 @@ static const char *const exception_names[32] = {
     "Reserved",
     "Reserved"};
 
+void exception_handler(struct interrupt_frame_t *frame);
 void init_idt(void);
 void irq_enable(void);
+void irq_disable(void);
 
 #define IRQ_APIC_TIMER_NUMBER 0x40
+#define IRQ_SOFT_SLEEP_NUMBER 0x41
 
 #endif // CPU_INTERRUPT_H

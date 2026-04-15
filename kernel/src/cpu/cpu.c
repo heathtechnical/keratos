@@ -47,9 +47,9 @@ void cpu_bsp_init(void)
     outb(0x21, 0xFF); // Master PIC
     outb(0xA1, 0xFF); // Slave PIC
 
-    lapic[0x320 / 4] = 0x20040;  // 0x40 | (1 << 17)
-    lapic[0x3E0 / 4] = 0x3;      // Divide by 16
-    lapic[0x380 / 4] = 10000000; // Initial count (tune as needed)
+    lapic[0x320 / 4] = 0x20040; // 0x40 | (1 << 17)
+    lapic[0x3E0 / 4] = 0x3;     // Divide by 16
+    lapic[0x380 / 4] = 100000;  // Initial count (tune as needed)
 }
 
 void cpu_cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx)
