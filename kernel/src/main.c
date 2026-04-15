@@ -14,7 +14,7 @@
 #include <task.h>
 #include <panic.h>
 
-#include <tasks/fbsplash.h>
+#include <tasks.h>
 
 // Halt and catch fire function.
 static void hcf(void)
@@ -54,8 +54,10 @@ void kmain(void)
     irq_enable();
 
     // Create demo framebuffer splash screen
-    struct task_t task1;
-    task_create(&task1, "1111", &fbsplash_loop);
+    struct task_t fbsplash_task, ticker_task, tocker_task;
+    task_create(&fbsplash_task, "fbsplash", &fbsplash_loop);
+    task_create(&ticker_task, "ticker", &ticker_loop);
+    task_create(&tocker_task, "ticker", &tocker_loop);
 
     // We're done, just hang...
     kprintf("[init] Halt!\n");

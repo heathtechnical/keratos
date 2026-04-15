@@ -19,7 +19,10 @@ void task_init()
 {
     // Create boot task
     memset(&task0, 0, sizeof(struct task_t));
-    memcpy(task0.name, "boot", 4);
+
+    strncpy(task0.name, "boot", 255);
+
+    // memcpy(task0.name, "boot", 4);
     task0.slice_count = 1;
     task0.status = STATUS_RUNNABLE;
     tasks[0] = &task0;
@@ -29,8 +32,9 @@ void task_init()
 void task_create(struct task_t *t, char *name, void *entry)
 {
 
-    memset(t, 0, sizeof(struct task_t));
-    memcpy(t->name, name, 4);
+    memset(t, 0, sizeof(*t));
+
+    strncpy(t->name, name, 255);
 
     t->status = STATUS_RUNNABLE;
 
@@ -38,7 +42,7 @@ void task_create(struct task_t *t, char *name, void *entry)
     memset(stack, 0, TASK_STACK_SIZE);
 
     t->frame.rip = (uintptr_t)entry;
-    t->frame.rsp = (uint64_t)stack + 8192;
+    t->frame.rsp = (uint64_t)stack + TASK_STACK_SIZE;
     t->frame.cs = bootinfo()->code_segment;
     t->frame.ss = bootinfo()->data_segment;
     t->frame.rflags = 0x202;
@@ -62,7 +66,7 @@ void task_create(struct task_t *t, char *name, void *entry)
 
     tasks[free_idx] = t;
 
-    kprintf("[task]: New task created at slot %d\n", free_idx);
+    kprintf("[task]: New task created at slot %d, name=%s\n", free_idx, t->name);
 }
 
 void _slice_accounting()
@@ -131,6 +135,11 @@ void task_sleep(uint64_t ticks)
     }
 
     // Call soft sleep interrupt
+    asm volatile("int $0x41" ::: "memory");
+}
+
+void task_yield()
+{
     asm volatile("int $0x41" ::: "memory");
 }
 
